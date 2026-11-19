@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+
+# uv / virtualenv
+.venv/
+.python-version
+
+# Local secrets - never commit real API keys
+.env
+.env.local
+
+# Generated output (created by running tracker.py)
+results.json
