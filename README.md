@@ -62,27 +62,41 @@ uv run tracker.py "your prompt"
 
 ## Sample output
 
-> **Note:** the output below is illustrative — model names, token counts, and
-> timings will vary with your chosen models and prompt.
+> **Note:** the output below is from an actual run with `gemini-3.8-flash` and
+> `openai/gpt-oss-120b`. Token counts, timing, and cost will vary with your
+> prompt and chosen models. Gemini free-tier responses can be slow (rate
+> limiting); Groq's LPU hardware typically replies in under 2 seconds.
 
 ```
 Sending prompt to Gemini (gemini-3.8-flash) and Groq (openai/gpt-oss-120b)...
 
 --- gemini (gemini-3.8-flash) ---
-The speed of light in a vacuum is approximately 299,792,458 metres per second,
-often rounded to 3 × 10⁸ m/s. ...
+The speed of light in a vacuum is exactly **299,792,458 meters per second**
+(commonly denoted as ***c***).
+
+Here are a few common approximations:
+
+* **Metric:** ~**300,000 kilometers per second** (3 × 10⁸ m/s)
+* **Imperial:** ~**186,282 miles per second**
+* **Miles per hour:** ~**670,616,629 mph**
 
 --- groq (openai/gpt-oss-120b) ---
-Light travels at about 299,792,458 m/s (roughly 186,282 miles per second) in a
-vacuum. This constant, denoted c, is fundamental to Einstein's special
-relativity. ...
+The speed of light in a vacuum is exactly **299,792,458 m/s** (meters per second).
+
+- In other common units this is:
+  • **≈ 299,792 km/s** (kilometers per second)
+  • **≈ 186,282 mi/s** (miles per second)
+  • **≈ 1.079 × 10⁹ km/h** (kilometers per hour)
+
+This value is a fundamental constant of nature and is denoted by the symbol
+**c** in physics equations, such as Einstein's famous relation E = mc².
 
 Provider  Input tokens  Output tokens  Elapsed (s)  Cost (USD)
---------  ------------  -------------  -----------  ----------
-gemini    14            87             1.843        $0.00037125
-groq      14            112            0.521        $0.00008910
+--------  ------------  -------------  -----------  ------------
+gemini    8             337            33.087       $0.00126975
+groq      78            216            1.101        $0.00014130
 
-Results written to /path/to/IEC-Assignment-1/results.json
+Results written to .../IEC-Assignment-1/results.json
 ```
 
 ---
@@ -156,12 +170,13 @@ or supply the rates via `.env` (see `.env.example`).
 
 ## What this exercise demonstrates
 
-Calling two LLM providers with the same prompt reveals how much raw speed, token
-efficiency, and cost can diverge even for a simple query: Groq's LPU hardware
-consistently returns replies in well under a second, while Gemini often takes
-one to three seconds. The per-token price differences mean a short prompt that
-costs ~$0.00037 on Gemini 3.8 Flash costs roughly four times less on Groq's
-GPT-OSS 120B, though the models are architecturally different and produce
-noticeably different replies. Reading usage counts directly from each API's
-metadata — rather than estimating from character count — also demonstrates that
-token counts are model-specific and can vary by 20–40 % for the same prompt.
+Calling two LLM providers with the same prompt reveals striking differences in
+speed, token usage, and cost. Across three live test runs, Groq's LPU hardware
+replied in 1.1–1.6 seconds every time, while Gemini 3.8 Flash on the free tier
+took 33–99 seconds (a sign of rate-limiting rather than raw model speed). On
+the cost side, Groq's GPT-OSS 120B was consistently 8–13× cheaper than Gemini
+3.8 Flash for the same prompt, entirely because of the difference in
+per-token pricing. Reading token counts directly from each API's usage metadata
+— rather than estimating from character count — also showed that Groq reports
+noticeably more input tokens for the same prompt (78–82 vs. 8–12), reflecting
+different tokenizers and system-prompt handling between the two providers.
