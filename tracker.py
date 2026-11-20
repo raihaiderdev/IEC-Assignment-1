@@ -33,8 +33,15 @@ from dotenv import load_dotenv
 #   Groq   – https://console.groq.com/docs/models
 # ---------------------------------------------------------------------------
 PRICING: dict[str, dict[str, float]] = {
+    # Gemini Developer API – rates for prompts <= 200k tokens (paid tier).
+    # Free tier is free of charge; these figures estimate the paid-tier cost.
+    # Source: https://aistudio.google.com/docs/pricing  (verified Nov 2026)
+    "gemini-3.5-flash":      {"input": 0.30,  "output": 2.50},
+    "gemini-3.5-flash-lite": {"input": 0.30,  "output": 2.50},
+    "gemini-2.5-flash":      {"input": 0.30,  "output": 2.50},   # deprecated → 3.5-flash-lite after Dec 1 2026
     "gemini-3.8-flash":      {"input": 0.75,  "output": 3.75},
     "gemini-3.1-flash-lite": {"input": 0.25,  "output": 1.50},
+    # GroqCloud developer/free plan – source: https://console.groq.com/docs/models
     "openai/gpt-oss-120b":   {"input": 0.15,  "output": 0.60},
     "openai/gpt-oss-20b":    {"input": 0.075, "output": 0.30},
 }
