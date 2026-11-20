@@ -24,8 +24,7 @@ IEC-Assignment-1/
 ├── tracker.py       ← the main app (run this)
 ├── pyproject.toml   ← project config (lists dependencies)
 ├── uv.lock          ← exact package versions
-├── .env.example     ← template for your API keys
-├── .env             ← your real keys (never committed)
+├── .env             ← your API keys (never committed)
 ├── .gitignore       ← tells git what files to ignore
 ├── README.md        ← this file
 └── results.json     ← created when you run the app (gitignored)
@@ -76,17 +75,7 @@ Both are free — no credit card needed.
 
 ### Step 5 — Create your `.env` file
 
-Copy the example file:
-
-```bash
-# Windows
-copy .env.example .env
-
-# Mac / Linux
-cp .env.example .env
-```
-
-Then open `.env` and replace the placeholder values with your real keys:
+Create a new file called `.env` in the project folder and paste this into it:
 
 ```
 GEMINI_API_KEY=paste_your_gemini_key_here
@@ -95,6 +84,8 @@ GEMINI_MODEL=gemini-3.5-flash
 GROQ_API_KEY=paste_your_groq_key_here
 GROQ_MODEL=openai/gpt-oss-120b
 ```
+
+Replace `paste_your_gemini_key_here` and `paste_your_groq_key_here` with your real keys.
 
 > ⚠️ Never share your `.env` file or commit it to GitHub. It is already listed
 > in `.gitignore` so git will automatically ignore it.
