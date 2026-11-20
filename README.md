@@ -1,182 +1,269 @@
 # IEC Assignment 1 — Two Provider Cost Tracker
 
-A small Python CLI that sends the same prompt to **Google Gemini** and **Groq**
-in a single run, reads the token counts each API reports in its usage metadata,
-measures elapsed time independently for each call, and prints a side-by-side
-comparison table. It also writes a `results.json` file at the repository root
-with the full per-provider breakdown.
+A beginner-friendly Python app that opens a window, lets you type **3 prompts**,
+sends each one to **Google Gemini** and **Groq** at the same time, and shows
+you the replies side by side along with how many tokens were used, how long it
+took, and what it would cost.
 
 ---
 
-## Setup
+## What it does
 
-### 1. Prerequisites
+1. You type 3 questions (prompts) in the app window
+2. It sends each question to both Gemini and Groq
+3. It shows both answers side by side for each prompt
+4. It shows a table comparing tokens, speed, and cost
+5. It saves everything to a `results.json` file
 
-- [Python 3.11+](https://www.python.org/) installed
-- [uv](https://docs.astral.sh/uv/) installed
-  (`pip install uv` or see the [installation guide](https://docs.astral.sh/uv/getting-started/installation/))
+---
 
-### 2. Install dependencies
+## Project files
+
+```
+IEC-Assignment-1/
+├── tracker.py       ← the main app (run this)
+├── pyproject.toml   ← project config (lists dependencies)
+├── uv.lock          ← exact package versions
+├── .env.example     ← template for your API keys
+├── .env             ← your real keys (never committed)
+├── .gitignore       ← tells git what files to ignore
+├── README.md        ← this file
+└── results.json     ← created when you run the app (gitignored)
+```
+
+---
+
+## Setup — step by step
+
+### Step 1 — Install Python
+
+Download and install Python 3.11 or newer from https://www.python.org/
+
+### Step 2 — Install uv
+
+`uv` is a fast Python package manager. Install it by running this in your terminal:
+
+```bash
+pip install uv
+```
+
+### Step 3 — Install the project dependencies
+
+Open a terminal in the project folder and run:
 
 ```bash
 uv sync
 ```
 
-This reads `pyproject.toml`, creates a local `.venv`, and installs
-`google-genai`, `groq`, and `python-dotenv`.
+This reads `pyproject.toml` and installs these three packages into a local `.venv` folder:
 
-### 3. Configure API keys
+| Package | What it does |
+|---|---|
+| `google-genai` | Official Google SDK to talk to Gemini |
+| `groq` | Official Groq SDK to talk to Groq |
+| `python-dotenv` | Reads your API keys from the `.env` file |
 
-Copy the example file and fill in your keys:
+### Step 4 — Get your API keys
+
+You need a free key from each provider:
+
+| Provider | Where to get the key |
+|---|---|
+| Google Gemini | https://aistudio.google.com/apikey |
+| Groq | https://console.groq.com/keys |
+
+Both are free — no credit card needed.
+
+### Step 5 — Create your `.env` file
+
+Copy the example file:
 
 ```bash
-# macOS / Linux
-cp .env.example .env
-
 # Windows
 copy .env.example .env
+
+# Mac / Linux
+cp .env.example .env
 ```
 
-Then edit `.env`:
+Then open `.env` and replace the placeholder values with your real keys:
 
-| Variable | Where to get it |
-|---|---|
-| `GEMINI_API_KEY` | [Google AI Studio → API keys](https://aistudio.google.com/apikey) |
-| `GEMINI_MODEL` | A model with a free tier — default: `gemini-3.8-flash` |
-| `GROQ_API_KEY` | [GroqCloud → API Keys](https://console.groq.com/keys) |
-| `GROQ_MODEL` | A free-plan model — default: `openai/gpt-oss-120b` |
+```
+GEMINI_API_KEY=paste_your_gemini_key_here
+GEMINI_MODEL=gemini-3.5-flash
 
-Both providers offer a free tier with no credit card required, making them
-suitable for experimentation. `.env` is listed in `.gitignore` and will never
-be committed.
+GROQ_API_KEY=paste_your_groq_key_here
+GROQ_MODEL=openai/gpt-oss-120b
+```
+
+> ⚠️ Never share your `.env` file or commit it to GitHub. It is already listed
+> in `.gitignore` so git will automatically ignore it.
 
 ---
 
-## Run
+## How to run
 
 ```bash
-uv run tracker.py "your prompt"
+uv run tracker.py
 ```
+
+A window will open that looks like this:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  ⚡ Two Provider Cost Tracker  |  Gemini  vs  Groq       │
+│  Gemini model: gemini-3.5-flash   Groq: gpt-oss-120b    │
+│                                                          │
+│  Prompt 1  [ type your first question here            ] │
+│  Prompt 2  [ type your second question here           ] │
+│  Prompt 3  [ type your third question here            ] │
+│                                                          │
+│  [ ▶ Run All Prompts ]   Enter prompts above and click  │
+└─────────────────────────────────────────────────────────┘
+```
+
+Type your 3 questions and click **Run All Prompts**.
 
 ---
 
 ## Sample output
 
-> **Note:** the output below is from an actual run with `gemini-3.8-flash` and
-> `openai/gpt-oss-120b`. Token counts, timing, and cost will vary with your
-> prompt and chosen models. Gemini free-tier responses can be slow (rate
-> limiting); Groq's LPU hardware typically replies in under 2 seconds.
+After clicking Run, results appear for each prompt like this:
 
 ```
-Sending prompt to Gemini (gemini-3.8-flash) and Groq (openai/gpt-oss-120b)...
+Prompt 1: What is the speed of light?
+─────────────────────────────────────────────────────────
 
---- gemini (gemini-3.8-flash) ---
-The speed of light in a vacuum is exactly **299,792,458 meters per second**
-(commonly denoted as ***c***).
+🔵 GEMINI  (gemini-3.5-flash)      🟢 GROQ  (openai/gpt-oss-120b)
+┌──────────────────────────┐       ┌──────────────────────────┐
+│ The speed of light in a  │       │ The speed of light in a  │
+│ vacuum is exactly        │       │ vacuum is exactly        │
+│ 299,792,458 m/s...       │       │ 299,792,458 m/s...       │
+│                          │       │                          │
+│ In: 8    Out: 92         │       │ In: 78   Out: 180        │
+│ Time: 2.1s  Cost: $0.00  │       │ Time: 1.1s  Cost: $0.00  │
+└──────────────────────────┘       └──────────────────────────┘
 
-Here are a few common approximations:
-
-* **Metric:** ~**300,000 kilometers per second** (3 × 10⁸ m/s)
-* **Imperial:** ~**186,282 miles per second**
-* **Miles per hour:** ~**670,616,629 mph**
-
---- groq (openai/gpt-oss-120b) ---
-The speed of light in a vacuum is exactly **299,792,458 m/s** (meters per second).
-
-- In other common units this is:
-  • **≈ 299,792 km/s** (kilometers per second)
-  • **≈ 186,282 mi/s** (miles per second)
-  • **≈ 1.079 × 10⁹ km/h** (kilometers per hour)
-
-This value is a fundamental constant of nature and is denoted by the symbol
-**c** in physics equations, such as Einstein's famous relation E = mc².
-
-Provider  Input tokens  Output tokens  Elapsed (s)  Cost (USD)
---------  ------------  -------------  -----------  ------------
-gemini    8             337            33.087       $0.00126975
-groq      78            216            1.101        $0.00014130
-
-Results written to .../IEC-Assignment-1/results.json
+Provider   In tokens   Out tokens   Time (s)   Cost (USD)
+gemini     8           92           2.10       $0.00023600
+groq       78          180          1.10       $0.00012270
 ```
+
+> **Note:** Gemini on the free tier can be slow (sometimes 30–90 seconds per
+> request due to rate limiting). Groq typically responds in 1–2 seconds.
 
 ---
 
 ## results.json
 
-After every successful run the tool overwrites `results.json` at the repository
-root. It is a UTF-8 JSON array with exactly two objects — one per provider:
+After every run the app saves a `results.json` file. It contains one entry per
+prompt per provider (6 entries total for 3 prompts × 2 providers):
 
 ```json
 [
   {
+    "prompt": "What is the speed of light?",
     "provider": "gemini",
-    "model": "gemini-3.8-flash",
-    "reply": "...",
-    "input_tokens": 14,
-    "output_tokens": 87,
-    "input_price_per_m": 0.75,
-    "output_price_per_m": 3.75,
-    "cost_usd": 0.00037125
+    "model": "gemini-3.5-flash",
+    "reply": "The speed of light in a vacuum is exactly 299,792,458 m/s...",
+    "input_tokens": 8,
+    "output_tokens": 92,
+    "input_price_per_m": 0.30,
+    "output_price_per_m": 2.50,
+    "cost_usd": 0.000236,
+    "elapsed_seconds": 2.1
   },
   {
+    "prompt": "What is the speed of light?",
     "provider": "groq",
     "model": "openai/gpt-oss-120b",
-    "reply": "...",
-    "input_tokens": 14,
-    "output_tokens": 112,
+    "reply": "The speed of light in a vacuum is exactly 299,792,458 m/s...",
+    "input_tokens": 78,
+    "output_tokens": 180,
     "input_price_per_m": 0.15,
     "output_price_per_m": 0.60,
-    "cost_usd": 0.0000891
+    "cost_usd": 0.00012270,
+    "elapsed_seconds": 1.1
   }
 ]
 ```
 
-`results.json` is listed in `.gitignore` and is never committed.
+`results.json` is listed in `.gitignore` and is never committed to GitHub.
 
 ---
 
-## Cost formula
+## How the cost is calculated
 
 ```
-cost_usd = (input_tokens × input_price_per_m
-            + output_tokens × output_price_per_m) / 1_000_000
+cost = (input_tokens × input_price + output_tokens × output_price) / 1,000,000
 ```
 
-The `input_price_per_m` and `output_price_per_m` values in `results.json` are
-the USD-per-million-token rates from each provider's official pricing page (see
-Sources below).
+**Example:**
+- Groq: 78 input tokens × $0.15 + 180 output tokens × $0.60 = 11.7 + 108 = 119.7
+- Divide by 1,000,000 → **$0.0001197**
 
-> **Disclaimer:** the calculated cost is an **estimate**. Actual charges can
-> differ under a free tier (where qualifying usage costs $0), through
-> promotional pricing, context-length tiers, cached-token discounts, or other
-> adjustments applied by the provider. Always check your billing dashboard for
-> the actual charge.
+> These are estimates based on the standard paid-tier rates. The free tier
+> costs $0, so your actual bill will be $0 for small experiments.
 
-### Pricing sources (verified November 2026)
+### Pricing used (verified November 2026)
 
-| Provider | Model | Input ($/1M) | Output ($/1M) | Source |
+| Provider | Model | Input $/1M | Output $/1M | Source |
 |---|---|---|---|---|
-| Google Gemini | `gemini-3.8-flash` | $0.75 | $3.75 | [aistudio.google.com/docs/pricing](https://aistudio.google.com/docs/pricing) |
-| Google Gemini | `gemini-3.1-flash-lite` | $0.25 | $1.50 | [aistudio.google.com/docs/pricing](https://aistudio.google.com/docs/pricing) |
+| Gemini | `gemini-3.5-flash` | $0.30 | $2.50 | [aistudio.google.com/docs/pricing](https://aistudio.google.com/docs/pricing) |
+| Gemini | `gemini-3.5-flash-lite` | $0.30 | $2.50 | [aistudio.google.com/docs/pricing](https://aistudio.google.com/docs/pricing) |
+| Gemini | `gemini-3.8-flash` | $0.75 | $3.75 | [aistudio.google.com/docs/pricing](https://aistudio.google.com/docs/pricing) |
 | Groq | `openai/gpt-oss-120b` | $0.15 | $0.60 | [console.groq.com/docs/models](https://console.groq.com/docs/models) |
 | Groq | `openai/gpt-oss-20b` | $0.075 | $0.30 | [console.groq.com/docs/models](https://console.groq.com/docs/models) |
 
-Rates shown are standard paid-tier prices for prompts up to 200 k tokens (Gemini)
-and the developer plan (Groq). If a configured model is not in the table the
-tool reports a clear error; you can extend the `PRICING` dict in `tracker.py`
-or supply the rates via `.env` (see `.env.example`).
+---
+
+## How the code is structured
+
+`tracker.py` is kept simple and readable. Here is what each part does:
+
+```python
+# 1. Load API keys from .env
+load_dotenv()
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+...
+
+# 2. Pricing dictionary
+PRICING = { "gemini-3.5-flash": {"input": 0.30, "output": 2.50}, ... }
+
+# 3. calc_cost() — one formula, 2 lines
+def calc_cost(in_tokens, out_tokens, model): ...
+
+# 4. ask_gemini() — sends prompt, returns reply + token counts + time
+def ask_gemini(prompt): ...
+
+# 5. ask_groq() — same but for Groq
+def ask_groq(prompt): ...
+
+# 6. save_results() — writes results.json
+def save_results(all_results): ...
+
+# 7. App class — the GUI window
+class App(tk.Tk):
+    _build()              # draw all widgets
+    _on_run()             # handles button click
+    _worker()             # runs API calls in background
+    _show_prompt_result() # draws one result card
+```
 
 ---
 
-## What this exercise demonstrates
+## What this assignment demonstrates
 
-Calling two LLM providers with the same prompt reveals striking differences in
-speed, token usage, and cost. Across three live test runs, Groq's LPU hardware
-replied in 1.1–1.6 seconds every time, while Gemini 3.8 Flash on the free tier
-took 33–99 seconds (a sign of rate-limiting rather than raw model speed). On
-the cost side, Groq's GPT-OSS 120B was consistently 8–13× cheaper than Gemini
-3.8 Flash for the same prompt, entirely because of the difference in
-per-token pricing. Reading token counts directly from each API's usage metadata
-— rather than estimating from character count — also showed that Groq reports
-noticeably more input tokens for the same prompt (78–82 vs. 8–12), reflecting
-different tokenizers and system-prompt handling between the two providers.
+This project shows three important things:
+
+1. **Different providers give different speeds** — Groq's LPU hardware responds
+   in 1–2 seconds while Gemini's free tier can take 30–90 seconds due to rate
+   limits.
+
+2. **Cost depends on token count and model** — The same prompt sent to two
+   different models produces different token counts (because each model uses a
+   different tokenizer) and different costs (because pricing varies).
+
+3. **APIs return usage data** — Both providers include token counts directly in
+   the API response (`usage_metadata` for Gemini, `usage` for Groq), so you
+   don't have to estimate — you read exact numbers.
